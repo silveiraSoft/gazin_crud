@@ -28,10 +28,11 @@ tabelaDesenvolvedores = $('#tabelaDesenvolvedores').DataTable({
 
 var user_id, opcion;
 opcion = 4;
+var converterData = function(data){
+   return data+"1";
+}
 //jQuery.support.cors = true;    
-tabelaDesenvolvedores = $('#tabelaDesenvolvedores').DataTable({  
-        
-
+tabelaDesenvolvedores = $('#tabelaDesenvolvedores').DataTable({
     "ajax":{            
         "url": "http://localhost:8080/developers", 
         "method": 'GET', //usamos el metodo POST
@@ -47,44 +48,38 @@ tabelaDesenvolvedores = $('#tabelaDesenvolvedores').DataTable({
         {"data": "idade"},
         {"data": "hobby"},
         {"data": "dataNascimento"},
-        
         {"defaultContent": 
-        "<div class='text-center'><div class='btn-group'><button class='btn btn-primary btn-sm btnEditar'><i class='material-icons'>Editar</i></button><button class='btn btn-danger btn-sm btnBorrar'><i class='material-icons'>Borrar</i></button></div></div>"
-        
-        /*
-          "<div class='text-center'><div class='btn-group'><button class='btn btn-primary btn-sm btnEditar'><i class='material-icons'>edit</i></button><button class='btn btn-danger btn-sm btnBorrar'><i class='material-icons'>delete</i></button></div></div>"
-        */
-
+        "<div class='text-center'><div class='btn-group'><button class='btn btn-primary btn-sm btnEditar'><i class='material-icons'>Editar</i></button><button class='btn btn-danger btn-sm btnBorrar'><i class='material-icons'>Remover</i></button></div></div>"
         }
         
+        
     ]
-
     //linguagem Português
-        ,"columnDefs":[{
-        "targets": -1,
-        "data":null,
-        "defaultContent":"<div class='text-center'><div class='btn-group'><button class='btn btn-primary btn-sm btnEditar'><i class='material-icons'>edit</i></button><button class='btn btn-danger btn-sm btnBorrar'><i class='material-icons'>delete</i></button></div></div>" 
-        /*"<div class='text-center'><div class='btn-group'><button class='btn btn-primary btnEditar'>Editar</button><button class='btn btn-danger btnBorrar'>Borrar</button></div></div>"  
-        */
-        }],
-        "language": {
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "zeroRecords": "Não se encontraram resultados",
-                "info": "Mostrando registros do _START_ ao _END_ de um total de _TOTAL_ registros",
-                "infoEmpty": "Mostrando registros do 0 ao 0 de um total de 0 registros",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)",
-                "sSearch": "Buscar:",
-                "oPaginate": {
-                    "sFirst": "Primeiro",
-                    "sLast":"Último",
-                    "sNext":"Seguinte",
-                    "sPrevious": "Anterior"
-                 },
-                 "sProcessing":"Processando...",
-            }
+    ,"columnDefs":[{
+                    "targets": -1,
+                    "data":null,
+                    "defaultContent":"<div class='text-center'><div class='btn-group'><button class='btn btn-primary btn-sm btnEditar'><i class='material-icons'>Editar</i></button><button class='btn btn-danger btn-sm btnBorrar'>Remover</button></div></div>"
+                    }
+                ]
+    ,
+    "language": {
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "zeroRecords": "Não se encontraram resultados",
+        "info": "Mostrando registros do _START_ ao _END_ de um total de _TOTAL_ registros",
+        "infoEmpty": "Mostrando registros do 0 ao 0 de um total de 0 registros",
+        "infoFiltered": "(filtrado de um total de _MAX_ registros)",
+        "sSearch": "Buscar:",
+        "oPaginate": {
+            "sFirst": "Primeiro",
+            "sLast":"Último",
+            "sNext":"Seguinte",
+            "sPrevious": "Anterior"
+        },
+        "sProcessing":"Processando...",
+    }
 }); 
 
-$(document).on("keydown", "#hobby", function () {
+$(document).on("keydown", "#developer_hobby", function () {
     var caracteresRestantes = 255;
     var caracteresDigitados = parseInt($(this).val().length);
     var caracteresRestantes = caracteresRestantes - caracteresDigitados;
@@ -93,20 +88,22 @@ $(document).on("keydown", "#hobby", function () {
 
 
 var fila; //captura a fila, para editar ou eliminar
-//submit para salvar e Actuazar
+/**
+*
+* submit para salvar e Actuazar
+*/
+
 $('#formDesenvolvedor').submit(function(e){                         
     e.preventDefault(); //evita o comportamento normal do submit, a recarga total da página
     nome = $.trim($('#developer_nome').val());    
     idade = $.trim($('#developer_idade').val());
     hobby = $.trim($('#developer_hobby').val());    
     dataNascimento = $.trim($('#developer_dataNascimento').val());    
-    sexo = $.trim($('#developer_sexo').val());                           
-    alert("aqui:"+user_id+"opcion:"+opcion);
+    sexo = $.trim($('#developer_sexo').val());
     if(user_id === null && opcion == 1){
         url = "http://localhost:8080/developers";
         method = "POST";
     }else if(opcion==2 && user_id > 0) {
-        alert("editar");
         url = "http://localhost:8080/developers/"+user_id;
         method = "PUT";
     }
@@ -164,7 +161,7 @@ $(document).on("click", ".btnBorrar", function(){
     fila = $(this);           
     user_id = parseInt($(this).closest('tr').find('td:eq(0)').text()) ;     
     opcion = 3; //eliminar        
-    var respuesta = confirm("¿Está seguro de borrar el registro "+user_id+"?");                
+    var respuesta = confirm("¿Quer deletar o registro "+user_id+"?");                
     if (respuesta) {            
         $.ajax({
           url: "http://localhost:8080/developers/"+user_id,
